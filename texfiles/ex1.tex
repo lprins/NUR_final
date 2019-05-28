@@ -1,0 +1,115 @@
+\section*{Exercise 1}
+The RNG used is a combination of an MWC (Multiply With Carry) and an XORshift.
+
+\inputminted[firstline=156, lastline=193]{Python}{../NUR_random.py}
+
+\paragraph{1a}
+To test the quality of the RNG, we generate random numbers from a uniform distribution $U(0, 1)$ and plot their distribution.
+Also shown is the dependence of a generated number on the number generated previously.
+
+\inputminted[firstline=7, lastline=34]{Python}{../ex1.py}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex1_scatter_sequential}
+  \caption{Random number generated against random number generated immediately before.
+  There is no clear correlation visible, which means our RNG is working as expected.}\label{fig:ex1_scatter_sequential}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex1_scatter_index}
+  \caption{First 1000 random numbers generated.
+  There is no clear trend with index, which is as expected.}\label{fig:ex1_scatter_index}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex1_hist_uniform}
+  \caption{Histogram of 1 million uniform deviates.
+  The numbers seem to be distributed uniformly within the range.}\label{fig:ex1_hist_uniform}
+\end{figure}
+
+\clearpage
+
+\paragraph{1b}
+To generate standard normal deviates, we can use the Box-Muller method.
+To generate numbers with a known mean $\mu$ and variance $\sigma^2$, we transform these numbers by multiplying by $\sigma$ and adding $\mu$.
+We generate 1000 numbers with $\mu = 3$ and $\sigma = 2.4$.
+For 1000 normal deviates, we expect about 3 numbers to lie beyond $\pm 3 \sigma$.
+We bin in intervals of $0.5 \sigma$.
+
+\inputminted[firstline=195, lastline=211]{Python}{../NUR_random.py}
+\inputminted[firstline=36, lastline=60]{Python}{../ex1.py}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex1_normal_hist}
+  \caption{Histogram of 1000 random deviates with $\mu = 3$ and $\sigma = 2.4$, compared with theoretical PDF\@.
+  The 1 to 5 $\sigma$ edges are shown as vertical bars.
+  The PDF and the empirical distribution show good agreement.}\label{fig:ex1_normal_hist}
+\end{figure}
+
+\paragraph{1c}
+To compare two distributions without binning, we can use the Kolmogorov-Smirnov test.
+To use this test, we need to calculate the CDF of the normal distribution, for which we use the complementary error function.
+An approximation for the complementary error function using Chebyshev approximation is given in Numerical Recipes.
+
+\inputminted[firstline=4, lastline=47]{Python}{../NUR_random.py}
+
+We also need to sort the data, for this we use mergesort.
+
+\inputminted[firstline=3, lastline=15]{Python}{../sorting.py}
+\inputminted[firstline=62, lastline=95]{Python}{../sorting.py}
+
+Now we can finally define and use the KS-test.
+
+\inputminted[firstline=49, lastline=75]{Python}{../NUR_random.py}
+\inputminted[firstline=62, lastline=81]{Python}{../ex1.py}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex1_KS_test}
+  \caption{Results of 1-sided KS-test using my code and scipy for comparison, as a function of amount of random numbers tested.
+  Also shown is a p-value threshold of 0.05.
+  The p-values compare well with the scipy results and there are no results that indicate the generated distribution is incorrect.}\label{fig:ex1_KS_test}
+\end{figure}
+
+\paragraph{1d}
+The Kuiper's test is an improvement on the KS-test, because it is more sensitive away from the median compared to the KS-test.
+The implementation and testing of the Kuiper's test is shown below.
+
+\inputminted[firstline=105, lastline=135]{Python}{../NUR_random.py}
+\inputminted[firstline=83, lastline=101]{Python}{../ex1.py}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex1_Kuiper_test}
+  \caption{Results of 1-sided Kuiper's test using my code and astropy for comparison, as a function of amount of random numbers tested.
+  Also shown is a p-value threshold of 0.05.
+  The p-values compare well with the astropy results and there are no results that indicate the generated distribution is incorrect.
+  There is 1 point with p-value below 0.05, but this is to be expected, since we are performing 41 tests.}\label{fig:ex1_Kuiper_test}
+\end{figure}
+
+\paragraph{1e}
+We can also use a 2-sided KS test to compare two empirical distributions.
+Code for this is shown below, based on the implementation in Numerical Recipes.
+
+\inputminted[firstline=77, lastline=103]{Python}{../NUR_random.py}
+
+We have used the 2-sided KS test to compare 10 sets of random numbers with our own distribution of standard normals, to find out which sets are not standard normal distributed.
+
+\inputminted[firstline=103, lastline=121]{Python}{../ex1.py}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex1_KS_2sided}
+  \caption{Results of the 2-sided KS test for 10 given datasets.
+  Note that p-values are given on a log-scale.
+  The grey horizontal lines correspond to p-values of $0.05/41$ and $0.05/410$, corresponding to a 0.05 threshold when performing 41 tests,
+  or 41 tests on 10 datasets.
+  Most datasets are clearly not standard normal distributed.}\label{fig:ex1_KS_2sided}
+\end{figure}
+
+From the results, we see that all datasets other than sets 4 and 6 are not standard normal distributed.
+Set 4 seems to follow the proper distribution.
+For set 6, interpretation of the result depends on one's own view of the relevant statistics.
+\clearpage

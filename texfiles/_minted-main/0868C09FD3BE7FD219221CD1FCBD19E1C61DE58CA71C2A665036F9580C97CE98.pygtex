@@ -1,0 +1,82 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import} \PYG{n+nn}{numpy} \PYG{k+kn}{as} \PYG{n+nn}{np}
+\PYG{k+kn}{from} \PYG{n+nn}{numba} \PYG{k+kn}{import} \PYG{n}{njit}
+
+\PYG{n+nd}{@njit}
+\PYG{k}{def} \PYG{n+nf}{bit\PYGZus{}reverse}\PYG{p}{(}\PYG{n}{data}\PYG{p}{,} \PYG{n}{lg2\PYGZus{}N}\PYG{p}{):}
+    \PYG{c+c1}{\PYGZsh{} Bit reverses elements of data, which should be of size 2**lg2\PYGZus{}N}
+    \PYG{n}{index} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{np}\PYG{o}{.}\PYG{n}{int64}\PYG{p}{)}
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{lg2\PYGZus{}N}\PYG{p}{):}
+        \PYG{c+c1}{\PYGZsh{} A beautiful result from wikipedia:}
+        \PYG{c+c1}{\PYGZsh{} We can double the k\PYGZhy{}1 bits permutation, concatenate}
+        \PYG{c+c1}{\PYGZsh{} with 1 added to it and get the k bits permutation}
+        \PYG{c+c1}{\PYGZsh{} https://en.wikipedia.org/wiki/Bit\PYGZhy{}reversal\PYGZus{}permutation}
+        \PYG{n}{index} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{concatenate}\PYG{p}{((}\PYG{n}{index}\PYG{o}{*}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{n}{index}\PYG{o}{*}\PYG{l+m+mi}{2} \PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{))}
+    \PYG{c+c1}{\PYGZsh{} now rearrange the data array}
+    \PYG{k}{for} \PYG{n}{i}\PYG{p}{,} \PYG{n}{j} \PYG{o+ow}{in} \PYG{n+nb}{enumerate}\PYG{p}{(}\PYG{n}{index}\PYG{p}{):}
+        \PYG{k}{if} \PYG{n}{i} \PYG{o}{\PYGZgt{}} \PYG{n}{j}\PYG{p}{:}
+            \PYG{n}{temp} \PYG{o}{=} \PYG{n}{data}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]}
+            \PYG{n}{data}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{=} \PYG{n}{data}\PYG{p}{[}\PYG{n}{j}\PYG{p}{]}
+            \PYG{n}{data}\PYG{p}{[}\PYG{n}{j}\PYG{p}{]} \PYG{o}{=} \PYG{n}{temp}
+
+\PYG{n+nd}{@njit}
+\PYG{k}{def} \PYG{n+nf}{fft}\PYG{p}{(}\PYG{n}{data}\PYG{p}{,} \PYG{n}{sign}\PYG{o}{=\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{):}
+    \PYG{l+s+sd}{\PYGZsq{}\PYGZsq{}\PYGZsq{}}
+\PYG{l+s+sd}{    In\PYGZhy{}place DFT calculation, len(data) should be a power of 2}
+\PYG{l+s+sd}{    Note that NR and slides use sign=1,}
+\PYG{l+s+sd}{    FFTW and FFTPACK (and thus numpy and scipy) use sign=\PYGZhy{}1}
+\PYG{l+s+sd}{    Flipping sign gives the inverse transform up to a 1/n normalization}
+\PYG{l+s+sd}{    Based on Introduction to Algorithms by CLRS 3rd ed. 30.3}
+\PYG{l+s+sd}{    \PYGZsq{}\PYGZsq{}\PYGZsq{}}
+    \PYG{n}{N} \PYG{o}{=} \PYG{n}{data}\PYG{o}{.}\PYG{n}{size}
+    \PYG{c+c1}{\PYGZsh{} If N is a power of 2, it has form 1000...,}
+    \PYG{c+c1}{\PYGZsh{} N \PYGZhy{} 1 has the form 0111...}
+    \PYG{c+c1}{\PYGZsh{} Thus N \PYGZam{} (N \PYGZhy{} 1) == 0 iff N a power of 2}
+    \PYG{k}{if} \PYG{n}{N} \PYG{o}{\PYGZam{}} \PYG{p}{(}\PYG{n}{N} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{o}{!=} \PYG{l+m+mi}{0}\PYG{p}{:}
+        \PYG{k}{raise} \PYG{n+ne}{ValueError}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}Data size must be a power of 2\PYGZsq{}}\PYG{p}{)}
+    \PYG{c+c1}{\PYGZsh{} Note that powers of 2 are exact for floats, so no need to round}
+    \PYG{n}{lg2\PYGZus{}N} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{log2}\PYG{p}{(}\PYG{n}{N}\PYG{p}{))}
+    \PYG{n}{bit\PYGZus{}reverse}\PYG{p}{(}\PYG{n}{data}\PYG{p}{,} \PYG{n}{lg2\PYGZus{}N}\PYG{p}{)}
+    \PYG{k}{for} \PYG{n}{s} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{lg2\PYGZus{}N} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{):}
+        \PYG{n}{m} \PYG{o}{=} \PYG{l+m+mi}{2}\PYG{o}{**}\PYG{n}{s}
+        \PYG{c+c1}{\PYGZsh{} Calculate principal mth root of unity}
+        \PYG{n}{omega\PYGZus{}m} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{exp}\PYG{p}{(}\PYG{n}{sign} \PYG{o}{*} \PYG{l+m+mi}{2j} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi} \PYG{o}{/} \PYG{n}{m}\PYG{p}{)}
+        \PYG{k}{for} \PYG{n}{k} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{N}\PYG{p}{,} \PYG{n}{m}\PYG{p}{):}
+            \PYG{c+c1}{\PYGZsh{} omega is multiplied by omega\PYGZus{}m cycling through}
+            \PYG{c+c1}{\PYGZsh{} the required factors which are all mth roots of unity}
+            \PYG{n}{omega} \PYG{o}{=} \PYG{l+m+mi}{1}
+            \PYG{k}{for} \PYG{n}{j} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{m}\PYG{o}{//}\PYG{l+m+mi}{2}\PYG{p}{):}
+                \PYG{c+c1}{\PYGZsh{} Apply the Danielson\PYGZhy{}Lanczos update}
+                \PYG{n}{t} \PYG{o}{=} \PYG{n}{omega} \PYG{o}{*} \PYG{n}{data}\PYG{p}{[}\PYG{n}{k} \PYG{o}{+} \PYG{n}{j} \PYG{o}{+} \PYG{n}{m}\PYG{o}{//}\PYG{l+m+mi}{2}\PYG{p}{]}
+                \PYG{n}{u} \PYG{o}{=} \PYG{n}{data}\PYG{p}{[}\PYG{n}{k} \PYG{o}{+} \PYG{n}{j}\PYG{p}{]}
+                \PYG{n}{data}\PYG{p}{[}\PYG{n}{k} \PYG{o}{+} \PYG{n}{j}\PYG{p}{]} \PYG{o}{=} \PYG{n}{u} \PYG{o}{+} \PYG{n}{t}
+                \PYG{n}{data}\PYG{p}{[}\PYG{n}{k} \PYG{o}{+} \PYG{n}{j} \PYG{o}{+} \PYG{n}{m}\PYG{o}{//}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{=} \PYG{n}{u} \PYG{o}{\PYGZhy{}} \PYG{n}{t}
+                \PYG{c+c1}{\PYGZsh{} Calculate next factor omega}
+                \PYG{n}{omega} \PYG{o}{=} \PYG{n}{omega} \PYG{o}{*} \PYG{n}{omega\PYGZus{}m}
+
+\PYG{n+nd}{@njit}
+\PYG{k}{def} \PYG{n+nf}{fft3}\PYG{p}{(}\PYG{n}{data}\PYG{p}{,} \PYG{n}{sign}\PYG{o}{=\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{):}
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{data}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]):}
+        \PYG{k}{for} \PYG{n}{j} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{data}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]):}
+            \PYG{n}{fft}\PYG{p}{(}\PYG{n}{data}\PYG{p}{[}\PYG{n}{i}\PYG{p}{,} \PYG{n}{j}\PYG{p}{,} \PYG{p}{:],} \PYG{n}{sign}\PYG{p}{)}
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{data}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]):}
+        \PYG{k}{for} \PYG{n}{j} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{data}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]):}
+            \PYG{n}{fft}\PYG{p}{(}\PYG{n}{data}\PYG{p}{[:,} \PYG{n}{i}\PYG{p}{,} \PYG{n}{j}\PYG{p}{],} \PYG{n}{sign}\PYG{p}{)}
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{data}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]):}
+        \PYG{k}{for} \PYG{n}{j} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{data}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]):}
+            \PYG{n}{fft}\PYG{p}{(}\PYG{n}{data}\PYG{p}{[}\PYG{n}{j}\PYG{p}{,} \PYG{p}{:,} \PYG{n}{i}\PYG{p}{],} \PYG{n}{sign}\PYG{p}{)}
+\PYG{n+nd}{@njit}
+\PYG{k}{def} \PYG{n+nf}{fft2}\PYG{p}{(}\PYG{n}{data}\PYG{p}{,} \PYG{n}{sign}\PYG{o}{=\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{):}
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{data}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]):}
+        \PYG{n}{fft}\PYG{p}{(}\PYG{n}{data}\PYG{p}{[}\PYG{n}{i}\PYG{p}{,} \PYG{p}{:],} \PYG{n}{sign}\PYG{p}{)}
+    \PYG{k}{for} \PYG{n}{j} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{data}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]):}
+        \PYG{n}{fft}\PYG{p}{(}\PYG{n}{data}\PYG{p}{[:,} \PYG{n}{j}\PYG{p}{],} \PYG{n}{sign}\PYG{p}{)}
+
+\PYG{k}{def} \PYG{n+nf}{fftfreq}\PYG{p}{(}\PYG{n}{N}\PYG{p}{):}
+    \PYG{c+c1}{\PYGZsh{} returns frequencies of FFT transform}
+    \PYG{n}{freqs} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{empty}\PYG{p}{(}\PYG{n}{N}\PYG{p}{)}
+    \PYG{n}{pos\PYGZus{}edge} \PYG{o}{=} \PYG{p}{(}\PYG{n}{N} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{o}{//} \PYG{l+m+mi}{2} \PYG{o}{+} \PYG{l+m+mi}{1}
+    \PYG{n}{freqs}\PYG{p}{[:}\PYG{n}{pos\PYGZus{}edge}\PYG{p}{]} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{arange}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{pos\PYGZus{}edge}\PYG{p}{)}
+    \PYG{n}{freqs}\PYG{p}{[}\PYG{n}{pos\PYGZus{}edge}\PYG{p}{:]} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{arange}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{p}{(}\PYG{n}{N}\PYG{o}{//}\PYG{l+m+mi}{2}\PYG{p}{),} \PYG{l+m+mi}{0}\PYG{p}{)}
+    \PYG{k}{return} \PYG{n}{freqs}\PYG{o}{/}\PYG{n}{N}
+\end{Verbatim}

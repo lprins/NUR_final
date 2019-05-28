@@ -1,0 +1,110 @@
+\section*{Exercise 4}
+We use these constants in this exercise:
+
+\inputminted[firstline=12, lastline=24]{Python}{../ex4.py}
+
+\paragraph{4a}
+We want to calculate
+\begin{equation}
+    D(z) = \frac{5 \Omega_m H_0^2}{2} H(z)
+    \int_z^\infty \frac{1 + z'}{H^3(z')} dz'
+\end{equation}
+Note that
+\begin{equation*}
+    a = \frac{1}{1+z} \implies dz = -\frac{da}{a^2}
+\end{equation*}
+So that this is equivalent to
+\begin{equation}
+    D(a) = \frac{5 \Omega_m }{2} \frac{H(a)}{H_0}
+    \int_0^a {\left(a' \frac{H(a')}{H_0}\right)}^{-3} da'
+\end{equation}
+We know from the Friedmann equation
+\begin{equation}
+    \frac{H(a)}{H_0} = {(\Omega_m a^{-3} + \Omega_\Lambda)}^{1/2}
+\end{equation}
+So we can calculate $D(z=50) = D(a=1/51)$ by numerical integration.
+We need to perform an open integration, because there is a singularity at $a' = 0$.
+For this we use the open Romberg integration routine shown below.
+
+\inputminted[firstline=37, lastline=57]{Python}{../integration.py}
+\inputminted[firstline=68, lastline=80]{Python}{../ex4.py}
+\inputminted[firstline=146, lastline=149]{Python}{../ex4.py}
+
+With the result shown below.
+
+\inputminted[firstline=1, lastline=1]{text}{../output/ex4.txt}
+
+To calculate $\dot{D}$, we use that
+\begin{equation*}
+    \dot{D} = \frac{dD}{da} \dot{a} = \frac{dD}{da} a H
+\end{equation*}
+and derive analytically that
+\begin{equation*}
+    \frac{dD}{da} = \frac{5 \Omega_m}{2 a^3} {\left(\frac{H}{H_0}\right)}^{-1}
+    \left( {\left(\frac{H}{H_0}\right)}^{-1} -
+    \frac{3 \Omega_m}{2a} \int_0^a {\left(a' \frac{H(a')}{H_0}\right)}^{-3} da' \right)
+\end{equation*}
+so that
+\begin{equation}
+    \dot{D} = \frac{5 H_0 \Omega_m}{2 a^2}
+    \left( {\left(\frac{H}{H_0}\right)}^{-1} -
+    \frac{3 \Omega_m}{2a} \int_0^a {\left(a' \frac{H(a')}{H_0}\right)}^{-3} da' \right)
+\end{equation}
+Where we use the numerical result for the integral we obtained earlier.
+
+We can also calculate the derivative $\frac{dD}{da}$ numerically and then multiply by $\dot{a}$.
+We use Ridders' method to do this.
+
+\inputminted[firstline=73]{Python}{../integration.py}
+\inputminted[firstline=82, lastline=86]{Python}{../ex4.py}
+\inputminted[firstline=151, lastline=158]{Python}{../ex4.py}
+
+With results shown below
+\inputminted[firstline=2]{text}{../output/ex4.txt}
+As we can see, the agreement between the analytical and the numeric derivative is very good.
+
+\paragraph{4c}
+Using the Zeldovich approximation, we can generate initial conditions in 2D.
+We use the 2D IFFT from numpy to generate initial conditions for $64^2$ particles starting from $z=50$, and enforce the periodic boundary conditions using the mod (\%) operator.
+We also use a utility function to calculate the frequencies in the Fourier plane.
+
+\inputminted[firstline=74]{Python}{../fft.py}
+\inputminted[firstline=88, lastline=111]{Python}{../ex4.py}
+\inputminted[firstline=160, lastline=207]{Python}{../ex4.py}
+
+A movie of the evolution can be found in \texttt{movies/2D\_zeldovich/ICs.mp4}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex4_2D_ypos}
+  \caption{y-positions of the first 10 particles in the 2D ZA as a function of scale factor.}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex4_2D_yvel}
+  \caption{y-velocities of the first 10 particles in the 2D ZA as a function of scale factor.}
+\end{figure}
+
+\clearpage
+
+\paragraph{4d}
+We can also do this in 3D.
+We generate initial conditions for a later simulation, and plot the evolution of the initial conditions over time.
+Movies can be found in \texttt{movies/3D\_zeldovich/xy/ICs.mp4}, \texttt{movies/3D\_zeldovich/xz/ICs.mp4}, \texttt{movies/yz/3D\_zeldovich/ICs.mp4} for slices in the xy, xz and yz plane respectively.
+
+\inputminted[firstline=113, lastline=144]{Python}{../ex4.py}
+\inputminted[firstline=209]{Python}{../ex4.py}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex4_3D_zpos}
+  \caption{z-positions of the first 10 particles in the 3D ZA as a function of scale factor.}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex4_3D_zvel}
+  \caption{z-velocities of the first 10 particles in the 3D ZA as a function of scale factor.}
+\end{figure}
+\clearpage

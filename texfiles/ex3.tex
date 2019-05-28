@@ -1,0 +1,56 @@
+\section*{Exercise 3}
+The temporal part of the growth equation is:
+\begin{equation}
+\ddot D + 2 H \dot D = \frac{3}{2} \Omega_0 \frac{H_0^2}{a^3} D
+\end{equation}
+For an Einstein-de Sitter universe, where $\Omega_0 = \Omega_m = 1$, we get:
+\begin{gather*}
+a(t) = \left(\frac{3}{2} H_0 t\right)^{2/3} \iff
+\frac{3}{2} \frac{H_0^2}{a^3} = \frac{2}{3t^2} \\
+H = \frac{\dot a}{a} = \frac{2}{3t}
+\end{gather*}
+Therefore the linear growth equation for an EdS universe is:
+\begin{equation}
+\ddot D + \frac{4 \dot D}{3 t} = \frac{2D}{3t^2}
+\end{equation}
+Using the guess $D \propto t^\alpha$ gives the following general solution:
+\begin{equation}
+D(t) = A t^{2/3} + B t^{-1}
+\end{equation}
+$A$ and $B$ are determined by the initial conditions such that $A + B = D(1)$ and $\frac{2}{3}A - B = D'(1)$.
+
+To solve this equation, we use an embedded RK5(4) solver, with code shown below:
+
+\inputminted{Python}{../ODE.py}
+
+And the hardcoded coefficients for A:
+
+\inputminted{text}{../Tsit5A.txt}
+
+We then solve for different initial conditions, with a relative tolerance of $10^{-5}$ and an absolute tolerance of $10^{-7}$.
+
+\inputminted{Python}{../ex3.py}
+
+With results shown below.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex3_Growth_ODE_case_1}
+  \caption{Evolution of linear growth factor for $D(1) = 3$, $D'(1)=2$.}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex3_Growth_ODE_case_2}
+  \caption{Evolution of linear growth factor for $D(1) = 10$, $D'(1)=-10$.}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex3_Growth_ODE_case_3}
+  \caption{Evolution of linear growth factor for $D(1) = 5$, $D'(1)=0$.}
+\end{figure}
+
+The solver reproduces the analytical soltuion very well.
+There is a small deviation for the decaying solution, which is because the absolute tolerance is relatively large for this case.
+\clearpage

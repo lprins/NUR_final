@@ -1,0 +1,43 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import} \PYG{n+nn}{numpy} \PYG{k+kn}{as} \PYG{n+nn}{np}
+\PYG{k+kn}{import} \PYG{n+nn}{matplotlib.pyplot} \PYG{k+kn}{as} \PYG{n+nn}{plt}
+
+\PYG{k+kn}{from} \PYG{n+nn}{ODE} \PYG{k+kn}{import} \PYG{n}{Tsit5\PYGZus{}adaptive}
+
+\PYG{k}{def} \PYG{n+nf}{analytic\PYGZus{}solution}\PYG{p}{(}\PYG{n}{ts}\PYG{p}{,} \PYG{n}{D}\PYG{p}{,} \PYG{n}{D\PYGZus{}prime}\PYG{p}{):}
+    \PYG{c+c1}{\PYGZsh{} Analytic solution of the EdS linear growth equation}
+    \PYG{c+c1}{\PYGZsh{} Initial conditions are required at t=1}
+    \PYG{n}{A} \PYG{o}{=} \PYG{p}{(}\PYG{n}{D} \PYG{o}{+} \PYG{n}{D\PYGZus{}prime}\PYG{p}{)} \PYG{o}{*} \PYG{l+m+mi}{3} \PYG{o}{/} \PYG{l+m+mi}{5}
+    \PYG{n}{B} \PYG{o}{=} \PYG{n}{D} \PYG{o}{\PYGZhy{}} \PYG{n}{A}
+    \PYG{k}{return} \PYG{n}{A}\PYG{o}{*}\PYG{n}{ts}\PYG{o}{**}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{o}{/}\PYG{l+m+mi}{3}\PYG{p}{)} \PYG{o}{+} \PYG{n}{B}\PYG{o}{*}\PYG{n}{ts}\PYG{o}{**\PYGZhy{}}\PYG{l+m+mi}{1}
+
+\PYG{k}{def} \PYG{n+nf}{calc\PYGZus{}plot\PYGZus{}case}\PYG{p}{(}\PYG{n}{D}\PYG{p}{,} \PYG{n}{D\PYGZus{}prime}\PYG{p}{,} \PYG{n}{label}\PYG{p}{):}
+    \PYG{k}{def} \PYG{n+nf}{f\PYGZus{}dD}\PYG{p}{(}\PYG{n}{t}\PYG{p}{,} \PYG{n}{pars}\PYG{p}{):}
+        \PYG{c+c1}{\PYGZsh{} Set up the differential equation}
+        \PYG{n}{dD\PYGZus{}dt} \PYG{o}{=} \PYG{n}{pars}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+        \PYG{n}{d2D\PYGZus{}dt2} \PYG{o}{=} \PYG{l+m+mi}{2}\PYG{o}{*}\PYG{n}{pars}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{3}\PYG{o}{*}\PYG{n}{t}\PYG{o}{**}\PYG{l+m+mi}{2}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{4}\PYG{o}{*}\PYG{n}{pars}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{3}\PYG{o}{*}\PYG{n}{t}\PYG{p}{)}
+        \PYG{k}{return} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{((}\PYG{n}{dD\PYGZus{}dt}\PYG{p}{,} \PYG{n}{d2D\PYGZus{}dt2}\PYG{p}{))}
+    \PYG{n}{t0} \PYG{o}{=} \PYG{l+m+mi}{1}
+    \PYG{n}{t1} \PYG{o}{=} \PYG{l+m+mi}{1000}
+    \PYG{n}{init} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{((}\PYG{n}{D}\PYG{p}{,} \PYG{n}{D\PYGZus{}prime}\PYG{p}{))}
+    \PYG{n}{ts}\PYG{p}{,} \PYG{n}{ys\PYGZus{}numeric} \PYG{o}{=} \PYG{n}{Tsit5\PYGZus{}adaptive}\PYG{p}{(}\PYG{n}{t0}\PYG{p}{,} \PYG{n}{t1}\PYG{p}{,} \PYG{n}{init}\PYG{p}{,} \PYG{n}{f\PYGZus{}dD}\PYG{p}{,}
+                                    \PYG{n}{maxsteps}\PYG{o}{=}\PYG{l+m+mi}{200}\PYG{p}{,} \PYG{n}{atol}\PYG{o}{=}\PYG{l+m+mf}{1e\PYGZhy{}7}\PYG{p}{,} \PYG{n}{rtol}\PYG{o}{=}\PYG{l+m+mf}{1e\PYGZhy{}5}\PYG{p}{)}
+    \PYG{n}{Ds\PYGZus{}numeric} \PYG{o}{=} \PYG{n}{ys\PYGZus{}numeric}\PYG{p}{[:,} \PYG{l+m+mi}{0}\PYG{p}{]}
+    \PYG{n}{Ds\PYGZus{}analytic} \PYG{o}{=} \PYG{n}{analytic\PYGZus{}solution}\PYG{p}{(}\PYG{n}{ts}\PYG{p}{,} \PYG{n}{D}\PYG{p}{,} \PYG{n}{D\PYGZus{}prime}\PYG{p}{)}
+
+    \PYG{n}{plt}\PYG{o}{.}\PYG{n}{loglog}\PYG{p}{(}\PYG{n}{ts}\PYG{p}{,} \PYG{n}{Ds\PYGZus{}analytic}\PYG{p}{,} \PYG{n}{label}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}Analytic solution\PYGZsq{}}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}k\PYGZsq{}}\PYG{p}{)}
+    \PYG{n}{plt}\PYG{o}{.}\PYG{n}{plot}\PYG{p}{(}\PYG{n}{ts}\PYG{p}{,} \PYG{n}{Ds\PYGZus{}numeric}\PYG{p}{,} \PYG{n}{label}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}Numeric solution\PYGZsq{}}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}b\PYGZsq{}}\PYG{p}{)}
+    \PYG{n}{plt}\PYG{o}{.}\PYG{n}{scatter}\PYG{p}{(}\PYG{n}{ts}\PYG{p}{,} \PYG{n}{Ds\PYGZus{}numeric}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}b\PYGZsq{}}\PYG{p}{)}
+
+    \PYG{n}{plt}\PYG{o}{.}\PYG{n}{xlabel}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}t [yr]\PYGZsq{}}\PYG{p}{)}
+    \PYG{n}{plt}\PYG{o}{.}\PYG{n}{ylabel}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}Growth factor D\PYGZsq{}}\PYG{p}{)}
+    \PYG{n}{plt}\PYG{o}{.}\PYG{n}{title}\PYG{p}{(}\PYG{n}{f}\PYG{l+s+s2}{\PYGZdq{}D=\PYGZob{}D\PYGZcb{} D\PYGZsq{}=\PYGZob{}D\PYGZus{}prime\PYGZcb{}\PYGZdq{}}\PYG{p}{)}
+    \PYG{n}{plt}\PYG{o}{.}\PYG{n}{legend}\PYG{p}{()}
+
+    \PYG{n}{plt}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{n}{f}\PYG{l+s+s1}{\PYGZsq{}plots/ex3\PYGZus{}Growth\PYGZus{}ODE\PYGZus{}case\PYGZus{}\PYGZob{}label\PYGZcb{}.pdf\PYGZsq{}}\PYG{p}{)}
+    \PYG{n}{plt}\PYG{o}{.}\PYG{n}{close}\PYG{p}{()}
+
+\PYG{n}{calc\PYGZus{}plot\PYGZus{}case}\PYG{p}{(}\PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}1\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{calc\PYGZus{}plot\PYGZus{}case}\PYG{p}{(}\PYG{l+m+mi}{10}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{10}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}2\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{calc\PYGZus{}plot\PYGZus{}case}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}3\PYGZsq{}}\PYG{p}{)}
+\end{Verbatim}

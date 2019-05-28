@@ -1,0 +1,31 @@
+\section*{Exercise 2}
+To generate a Gaussian random field with known power spectrum, we can generate random normals in a Fourier plane.
+The variance of the random numbers is then given by $P(k) \propto k^n$.
+We also need to ensure that the generated Fourier plane has the required symmetry so that the field is real.
+
+\inputminted[firstline=6, lastline=35]{Python}{../ex2.py}
+
+Three random fields with different power index are shown below.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex2_n_1}
+  \caption{1024 $\times$ 1024 Gaussian random field with power index $n=-1$.}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex2_n_2}
+  \caption{1024 $\times$ 1024 Gaussian random field with power index $n=-2$.}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex2_n_3}
+  \caption{1024 $\times$ 1024 Gaussian random field with power index $n=-3$.}
+\end{figure}
+
+We can choose the physical size ourselves, however this influences the interpretation of the plot.
+If we choose that the units of x and y are in Mpc, this means that for a 1024 $\times$ 1024 image,
+the maximum physical frequency is 1 cycle per 1 Gpc and the minimum frequency is 1 per Mpc.
+
+We can see that a lower index $n$ corresponds to more large scale structure, or equivalently less small-scale variation.
+\clearpage

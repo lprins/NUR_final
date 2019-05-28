@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+D(z=50) = 0.01960778042811382
+Analytical result for dD/dt: 2.8006381572E\PYGZhy{}10 yr\PYGZhy{}1
+Numerical  result for dD/dt: 2.8006381571E\PYGZhy{}10 yr\PYGZhy{}1
+Relative difference between analytical and numerical derivative: 1.87E\PYGZhy{}11
+\end{Verbatim}

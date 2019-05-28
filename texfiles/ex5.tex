@@ -1,0 +1,172 @@
+\section*{Exercise 5}
+\paragraph{5a}
+The mass density defining the Nearest Grid Point (NGP) method in 1D is:
+\begin{equation}
+    S(x) = \frac{1}{\Delta x} \delta \left(\frac{x}{\Delta x}\right)
+\end{equation}
+This is the density of a point particle.
+
+Thus we need to assign all the mass of a given particle to the nearest point in our grid, explaining the name.
+Code for this is shown below.
+
+\inputminted[firstline=10, lastline=19]{Python}{../pm_utils.py}
+\inputminted[firstline=8, lastline=38]{Python}{../ex5.py}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_NGP_z4}
+  \caption{x-y slice of NGP mass assignment with $z=4$}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_NGP_z9}
+  \caption{x-y slice of NGP mass assignment with $z=9$}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_NGP_z11}
+  \caption{x-y slice of NGP mass assignment with $z=11$}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_NGP_z14}
+  \caption{x-y slice of NGP mass assignment with $z=14$}
+\end{figure}
+
+\clearpage
+\paragraph{5b}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_NGP_xpos}
+  \caption{Values of mass in shown cells for one particle in NGP simulation with x-coordinate as shown}
+\end{figure}
+
+\paragraph{5c}
+For the Cloud in Cell method, we can use linear interpolation.
+
+\inputminted[firstline=34, lastline=58]{Python}{../pm_utils.py}
+\inputminted[firstline=40, lastline=63]{Python}{../ex5.py}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_CIC_z4}
+  \caption{x-y slice of CIC mass assignment with $z=4$}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_CIC_z9}
+  \caption{x-y slice of CIC mass assignment with $z=9$}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_CIC_z11}
+  \caption{x-y slice of CIC mass assignment with $z=11$}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_CIC_z14}
+  \caption{x-y slice of CIC mass assignment with $z=14$}
+\end{figure}
+
+\clearpage
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_CIC_xpos}
+  \caption{Values of mass in shown cells for one particle in CIC simulation with x-coordinate as shown}
+\end{figure}
+
+\paragraph{5d}
+The implementation of a 1D FFT is shown below.
+
+\inputminted[firstline=5, lastline=54]{Python}{../fft.py}
+
+We test the FFT both analytically and by comparing to FFPACK using a checkerboard pattern.
+This corresponds to a wave sampled at the Nyquist Frequency.
+
+\inputminted[firstline=65, lastline=82]{Python}{../ex5.py}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_FFT1}
+  \caption{Numerical results for my FFT and numpy FFT for a checkerboard pattern.
+  The results agree within numerical precision.}
+\end{figure}
+
+\paragraph{5e}
+We also implement an FFT in 2 and 3 dimensions.
+
+\inputminted[firstline=56, lastline=72]{Python}{../fft.py}
+
+We test the 2D FFT on a checkerboard pattern and the 3D FFT on a multivariate gaussian.
+
+\inputminted[firstline=84, lastline=138]{Python}{../ex5.py}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_FFT2}
+  \caption{Numerical results for my FFT in 2 dimensions for a checkerboard pattern.
+  The results have been checked to agree within numerical precision.}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_FFT3}
+  \caption{Numerical results for my FFT in 3 dimensions for a 3D gaussian.}
+\end{figure}
+
+\paragraph{5f}
+We can calculate the gravitational potential using a Fourier Transform.
+
+\inputminted[firstline=60, lastline=73]{Python}{../pm_utils.py}
+\inputminted[firstline=140, lastline=158]{Python}{../ex5.py}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_pot_z4}
+  \caption{xy Potential at z=4}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_pot_z9}
+  \caption{xy Potential at z=9}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_pot_z11}
+  \caption{xy Potential at z=11}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_pot_z14}
+  \caption{xy Potential at z=14}
+\end{figure}
+
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_pot_xz}
+  \caption{xz Potential at y=8}
+\end{figure}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{ex5_pot_yz}
+  \caption{yz Potential at x=8}
+\end{figure}
+
+\clearpage
+
+\paragraph{5g}
+We use a five point stencil to calculate the gradient and then use CIC (linear interpolation) to assign the gradient to particles.
+
+
+\inputminted[firstline=75]{Python}{../pm_utils.py}
+\inputminted[firstline=160]{Python}{../ex5.py}
+
+Assigned gradients are shown below.
+\inputminted[firstline=4]{text}{../output/ex5.txt}

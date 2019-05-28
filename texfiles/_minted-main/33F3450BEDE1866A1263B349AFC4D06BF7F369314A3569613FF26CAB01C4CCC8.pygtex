@@ -1,0 +1,57 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import} \PYG{n+nn}{numpy} \PYG{k+kn}{as} \PYG{n+nn}{np}
+
+\PYG{c+c1}{\PYGZsh{} Tsitouras 5th (4th) order RK method, from }
+\PYG{c+c1}{\PYGZsh{} https://doi.org/10.1016/j.camwa.2011.06.002}
+\PYG{c+c1}{\PYGZsh{} Coefficients taken from the DifferentialEquations.jl package}
+\PYG{c+c1}{\PYGZsh{} Load A coefficients from file}
+\PYG{n}{Tsit5A} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{loadtxt}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}Tsit5A.txt\PYGZsq{}}\PYG{p}{,} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{np}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} Hardcode c coefficients}
+\PYG{n}{Tsit5c} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}\PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.161}\PYG{p}{,} \PYG{l+m+mf}{0.327}\PYG{p}{,} \PYG{l+m+mf}{0.9}\PYG{p}{,} \PYG{l+m+mf}{0.980026}\PYG{p}{,} \PYG{l+m+mf}{1.0}\PYG{p}{,} \PYG{l+m+mf}{1.0}\PYG{p}{],} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{np}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} coefficients for 5th and 4th order method}
+\PYG{n}{Tsit5b\PYGZus{}5} \PYG{o}{=} \PYG{n}{Tsit5A}\PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{p}{:]}
+\PYG{n}{Tsit5b\PYGZus{}4} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}\PYG{l+m+mf}{0.0946808}\PYG{p}{,} \PYG{l+m+mf}{0.00918357}\PYG{p}{,} \PYG{l+m+mf}{0.487771}\PYG{p}{,} \PYG{l+m+mf}{1.2343}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{2.70771}\PYG{p}{,} \PYG{l+m+mf}{1.86663}\PYG{p}{,} \PYG{l+m+mf}{0.0151515}\PYG{p}{],}
+                    \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{np}\PYG{o}{.}\PYG{n}{float64}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} No need to calculate 4th order directly, can precalculate terms}
+\PYG{n}{Tsit5b\PYGZus{}error} \PYG{o}{=} \PYG{n}{Tsit5b\PYGZus{}5} \PYG{o}{\PYGZhy{}} \PYG{n}{Tsit5b\PYGZus{}4}
+\PYG{k}{def} \PYG{n+nf}{Tsit5\PYGZus{}step}\PYG{p}{(}\PYG{n}{x}\PYG{p}{,} \PYG{n}{h}\PYG{p}{,} \PYG{n}{y}\PYG{p}{,} \PYG{n}{f\PYGZus{}dy}\PYG{p}{,} \PYG{n}{k0}\PYG{p}{):}
+    \PYG{n}{ks} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{((}\PYG{l+m+mi}{7}\PYG{p}{,} \PYG{n}{k0}\PYG{o}{.}\PYG{n}{size}\PYG{p}{))}
+    \PYG{n}{xs} \PYG{o}{=} \PYG{n}{x} \PYG{o}{+} \PYG{n}{h} \PYG{o}{*} \PYG{n}{Tsit5c}
+    \PYG{n}{ks}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{k0}
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{7}\PYG{p}{):}
+        \PYG{n}{y\PYGZus{}val} \PYG{o}{=} \PYG{n}{y} \PYG{o}{+} \PYG{n}{h} \PYG{o}{*} \PYG{n}{Tsit5A}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{err}{@} \PYG{n}{ks}
+        \PYG{n}{ks}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{=} \PYG{n}{f\PYGZus{}dy}\PYG{p}{(}\PYG{n}{xs}\PYG{p}{[}\PYG{n}{i}\PYG{p}{],} \PYG{n}{y\PYGZus{}val}\PYG{p}{)}
+    \PYG{n}{new\PYGZus{}y} \PYG{o}{=} \PYG{n}{y} \PYG{o}{+} \PYG{n}{h} \PYG{o}{*} \PYG{n}{Tsit5b\PYGZus{}5} \PYG{err}{@} \PYG{n}{ks}
+    \PYG{n}{err} \PYG{o}{=} \PYG{n}{h} \PYG{o}{*} \PYG{n}{Tsit5b\PYGZus{}error} \PYG{err}{@} \PYG{n}{ks}
+    \PYG{k}{return} \PYG{n}{new\PYGZus{}y}\PYG{p}{,} \PYG{n}{err}\PYG{p}{,} \PYG{n}{ks}\PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{]}
+
+\PYG{k}{def} \PYG{n+nf}{Tsit5\PYGZus{}adaptive}\PYG{p}{(}\PYG{n}{x1}\PYG{p}{,} \PYG{n}{x2}\PYG{p}{,} \PYG{n}{y0}\PYG{p}{,} \PYG{n}{f\PYGZus{}dy}\PYG{p}{,} \PYG{n}{atol}\PYG{o}{=}\PYG{l+m+mf}{1e\PYGZhy{}6}\PYG{p}{,} \PYG{n}{rtol}\PYG{o}{=}\PYG{l+m+mf}{1e\PYGZhy{}6}\PYG{p}{,} \PYG{n}{maxsteps}\PYG{o}{=}\PYG{l+m+mi}{10}\PYG{n}{\PYGZus{}000}\PYG{p}{):}
+    \PYG{n}{S} \PYG{o}{=} \PYG{l+m+mf}{0.95}
+    \PYG{n}{step\PYGZus{}order} \PYG{o}{=} \PYG{l+m+mi}{5}
+    \PYG{n}{xs} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{empty}\PYG{p}{(}\PYG{n}{maxsteps}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{)}
+    \PYG{n}{ys} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{empty}\PYG{p}{((}\PYG{n}{maxsteps}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{y0}\PYG{o}{.}\PYG{n}{size}\PYG{p}{))}
+    \PYG{n}{xs}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{x1}
+    \PYG{n}{ys}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{=} \PYG{n}{y0}
+    \PYG{n}{k0} \PYG{o}{=} \PYG{n}{f\PYGZus{}dy}\PYG{p}{(}\PYG{n}{xs}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{ys}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{])}
+    \PYG{n}{h} \PYG{o}{=} \PYG{p}{(}\PYG{n}{x2} \PYG{o}{\PYGZhy{}} \PYG{n}{x1}\PYG{p}{)} \PYG{o}{/} \PYG{n}{maxsteps}
+    \PYG{n}{i} \PYG{o}{=} \PYG{l+m+mi}{0}
+    \PYG{k}{for} \PYG{n}{nstep} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{maxsteps}\PYG{p}{):}
+        \PYG{n}{new\PYGZus{}y}\PYG{p}{,} \PYG{n}{err}\PYG{p}{,} \PYG{n}{k\PYGZus{}new} \PYG{o}{=} \PYG{n}{Tsit5\PYGZus{}step}\PYG{p}{(}\PYG{n}{xs}\PYG{p}{[}\PYG{n}{i}\PYG{p}{],} \PYG{n}{h}\PYG{p}{,} \PYG{n}{ys}\PYG{p}{[}\PYG{n}{i}\PYG{p}{],} \PYG{n}{f\PYGZus{}dy}\PYG{p}{,} \PYG{n}{k0}\PYG{p}{)}
+        \PYG{n}{scale} \PYG{o}{=} \PYG{n}{atol} \PYG{o}{+} \PYG{n}{rtol} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{maximum}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{abs}\PYG{p}{(}\PYG{n}{new\PYGZus{}y}\PYG{p}{),} \PYG{n}{np}\PYG{o}{.}\PYG{n}{abs}\PYG{p}{(}\PYG{n}{ys}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]))}
+        \PYG{n}{norm\PYGZus{}err} \PYG{o}{=} \PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{sum}\PYG{p}{((}\PYG{n}{err}\PYG{o}{/}\PYG{n}{scale}\PYG{p}{)}\PYG{o}{**}\PYG{l+m+mi}{2}\PYG{p}{)} \PYG{o}{/} \PYG{n}{err}\PYG{o}{.}\PYG{n}{size}\PYG{p}{)}\PYG{o}{**}\PYG{l+m+mf}{0.5}
+        \PYG{k}{if} \PYG{n}{norm\PYGZus{}err} \PYG{o}{\PYGZlt{}=} \PYG{l+m+mi}{1}\PYG{p}{:}
+            \PYG{n}{xs}\PYG{p}{[}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{xs}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{+} \PYG{n}{h}
+            \PYG{n}{ys}\PYG{p}{[}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{new\PYGZus{}y}
+            \PYG{n}{i} \PYG{o}{+=} \PYG{l+m+mi}{1}
+            \PYG{n}{k0} \PYG{o}{=} \PYG{n}{k\PYGZus{}new}
+            \PYG{k}{if} \PYG{n}{xs}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{\PYGZgt{}=} \PYG{n}{x2}\PYG{p}{:}
+                \PYG{k}{break}
+            \PYG{n}{h} \PYG{o}{*=} \PYG{n+nb}{min}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,} \PYG{n}{S} \PYG{o}{*} \PYG{n}{norm\PYGZus{}err}\PYG{o}{**}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{o}{/}\PYG{n}{step\PYGZus{}order}\PYG{p}{))}
+            \PYG{k}{if} \PYG{n}{xs}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{+} \PYG{n}{h} \PYG{o}{\PYGZgt{}} \PYG{n}{x2}\PYG{p}{:}
+                \PYG{n}{h} \PYG{o}{=} \PYG{n}{x2} \PYG{o}{\PYGZhy{}} \PYG{n}{xs}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]}
+        \PYG{k}{else}\PYG{p}{:}
+            \PYG{n}{h} \PYG{o}{*=} \PYG{n+nb}{max}\PYG{p}{(}\PYG{o}{.}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{n}{S} \PYG{o}{*} \PYG{n}{norm\PYGZus{}err}\PYG{o}{**}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{o}{/}\PYG{n}{step\PYGZus{}order}\PYG{p}{))}
+    \PYG{k}{if} \PYG{n}{xs}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{\PYGZlt{}} \PYG{n}{x2}\PYG{p}{:}
+        \PYG{k}{print}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}max steps reached before reaching x2\PYGZsq{}}\PYG{p}{)}
+    \PYG{k}{return} \PYG{n}{xs}\PYG{p}{[:}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{n}{ys}\PYG{p}{[:}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{]}
+\end{Verbatim}

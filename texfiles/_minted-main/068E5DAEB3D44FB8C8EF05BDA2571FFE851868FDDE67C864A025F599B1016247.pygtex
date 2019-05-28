@@ -1,0 +1,130 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import} \PYG{n+nn}{numpy} \PYG{k+kn}{as} \PYG{n+nn}{np}
+
+\PYG{k}{def} \PYG{n+nf}{swap}\PYG{p}{(}\PYG{n}{A}\PYG{p}{,} \PYG{n}{a}\PYG{p}{,} \PYG{n}{b}\PYG{p}{):}
+    \PYG{n}{temp} \PYG{o}{=} \PYG{n}{A}\PYG{p}{[}\PYG{n}{a}\PYG{p}{]}
+    \PYG{n}{A}\PYG{p}{[}\PYG{n}{a}\PYG{p}{]} \PYG{o}{=} \PYG{n}{A}\PYG{p}{[}\PYG{n}{b}\PYG{p}{]}
+    \PYG{n}{A}\PYG{p}{[}\PYG{n}{b}\PYG{p}{]} \PYG{o}{=} \PYG{n}{temp}
+
+\PYG{k}{def} \PYG{n+nf}{selection\PYGZus{}sort}\PYG{p}{(}\PYG{n}{A}\PYG{p}{):}
+    \PYG{n}{N} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{A}\PYG{p}{)}
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{N} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{):}
+        \PYG{n}{min\PYGZus{}el} \PYG{o}{=} \PYG{n}{i}
+        \PYG{k}{for} \PYG{n}{j} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{N}\PYG{p}{):}
+            \PYG{k}{if} \PYG{n}{A}\PYG{p}{[}\PYG{n}{j}\PYG{p}{]} \PYG{o}{\PYGZlt{}} \PYG{n}{A}\PYG{p}{[}\PYG{n}{min\PYGZus{}el}\PYG{p}{]:}
+                \PYG{n}{min\PYGZus{}el} \PYG{o}{=} \PYG{n}{j}
+        \PYG{n}{swap}\PYG{p}{(}\PYG{n}{A}\PYG{p}{,} \PYG{n}{i}\PYG{p}{,} \PYG{n}{min\PYGZus{}el}\PYG{p}{)}
+\PYG{k}{def} \PYG{n+nf}{selection\PYGZus{}argsort}\PYG{p}{(}\PYG{n}{A}\PYG{p}{):}
+    \PYG{n}{N} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{A}\PYG{p}{)}
+    \PYG{n}{indices} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{arange}\PYG{p}{(}\PYG{n}{N}\PYG{p}{,} \PYG{n}{dtype}\PYG{o}{=}\PYG{n+nb}{int}\PYG{p}{)}
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{N} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{):}
+        \PYG{n}{min\PYGZus{}el} \PYG{o}{=} \PYG{n}{i}
+        \PYG{k}{for} \PYG{n}{j} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{N}\PYG{p}{):}
+            \PYG{k}{if} \PYG{n}{A}\PYG{p}{[}\PYG{n}{indices}\PYG{p}{[}\PYG{n}{j}\PYG{p}{]]} \PYG{o}{\PYGZlt{}} \PYG{n}{A}\PYG{p}{[}\PYG{n}{indices}\PYG{p}{[}\PYG{n}{min\PYGZus{}el}\PYG{p}{]]:}
+                \PYG{n}{min\PYGZus{}el} \PYG{o}{=} \PYG{n}{j}
+        \PYG{n}{swap}\PYG{p}{(}\PYG{n}{indices}\PYG{p}{,} \PYG{n}{i}\PYG{p}{,} \PYG{n}{min\PYGZus{}el}\PYG{p}{)}
+    \PYG{k}{return} \PYG{n}{indices}
+
+\PYG{k}{def} \PYG{n+nf}{\PYGZus{}partition}\PYG{p}{(}\PYG{n}{A}\PYG{p}{):}
+    \PYG{n}{N} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{A}\PYG{p}{)}
+    \PYG{n}{pivot\PYGZus{}el} \PYG{o}{=} \PYG{n}{A}\PYG{p}{[}\PYG{n}{N} \PYG{o}{\PYGZgt{}\PYGZgt{}} \PYG{l+m+mi}{1}\PYG{p}{]}
+    \PYG{n}{i} \PYG{o}{=} \PYG{l+m+mi}{0}
+    \PYG{k}{while}\PYG{p}{(}\PYG{n+nb+bp}{True}\PYG{p}{):}
+        \PYG{k}{while}\PYG{p}{(}\PYG{n}{A}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{\PYGZlt{}} \PYG{n}{pivot\PYGZus{}el}\PYG{p}{):}
+            \PYG{n}{i} \PYG{o}{+=} \PYG{l+m+mi}{1}
+        \PYG{n}{j} \PYG{o}{=} \PYG{n}{N}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}
+        \PYG{k}{while}\PYG{p}{(}\PYG{n}{A}\PYG{p}{[}\PYG{n}{j}\PYG{p}{]} \PYG{o}{\PYGZgt{}} \PYG{n}{pivot\PYGZus{}el}\PYG{p}{):}
+            \PYG{n}{j} \PYG{o}{\PYGZhy{}=} \PYG{l+m+mi}{1}
+        \PYG{k}{if} \PYG{n}{i} \PYG{o}{==} \PYG{n}{j}\PYG{p}{:}
+            \PYG{k}{return} \PYG{n}{i}
+        \PYG{n}{swap}\PYG{p}{(}\PYG{n}{A}\PYG{p}{,} \PYG{n}{i}\PYG{p}{,} \PYG{n}{j}\PYG{p}{)}
+
+\PYG{k}{def} \PYG{n+nf}{quicksort}\PYG{p}{(}\PYG{n}{A}\PYG{p}{):}
+    \PYG{c+c1}{\PYGZsh{} DO NOT USE}
+    \PYG{c+c1}{\PYGZsh{} Some (unknown) error makes it slow}
+    \PYG{n}{N} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{A}\PYG{p}{)}
+    \PYG{k}{if} \PYG{n}{N} \PYG{o}{\PYGZlt{}} \PYG{l+m+mi}{10}\PYG{p}{:}
+        \PYG{n}{selection\PYGZus{}sort}\PYG{p}{(}\PYG{n}{A}\PYG{p}{)}
+        \PYG{k}{return}
+    \PYG{c+c1}{\PYGZsh{}Use median of three}
+    \PYG{n}{middle} \PYG{o}{=} \PYG{n}{N} \PYG{o}{\PYGZgt{}\PYGZgt{}} \PYG{l+m+mi}{1}
+    \PYG{k}{if} \PYG{n}{A}\PYG{p}{[}\PYG{n}{middle}\PYG{p}{]} \PYG{o}{\PYGZlt{}} \PYG{n}{A}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]:}
+        \PYG{n}{swap}\PYG{p}{(}\PYG{n}{A}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{middle}\PYG{p}{)}
+    \PYG{k}{if} \PYG{n}{A}\PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{\PYGZlt{}} \PYG{n}{A}\PYG{p}{[}\PYG{n}{middle}\PYG{p}{]:}
+        \PYG{n}{swap}\PYG{p}{(}\PYG{n}{A}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{middle}\PYG{p}{)}
+    \PYG{k}{if} \PYG{n}{A}\PYG{p}{[}\PYG{n}{middle}\PYG{p}{]} \PYG{o}{\PYGZlt{}} \PYG{n}{A}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]:}
+        \PYG{n}{swap}\PYG{p}{(}\PYG{n}{A}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{middle}\PYG{p}{)}
+    \PYG{c+c1}{\PYGZsh{} Element in middle is now median of first, middle last elements}
+    \PYG{c+c1}{\PYGZsh{} This is pivot}
+    \PYG{n}{p} \PYG{o}{=} \PYG{n}{\PYGZus{}partition}\PYG{p}{(}\PYG{n}{A}\PYG{p}{)}
+    \PYG{n}{quicksort}\PYG{p}{(}\PYG{n}{A}\PYG{p}{[:}\PYG{n}{p}\PYG{p}{])}
+    \PYG{n}{quicksort}\PYG{p}{(}\PYG{n}{A}\PYG{p}{[}\PYG{n}{p}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{:])}
+
+\PYG{k}{def} \PYG{n+nf}{\PYGZus{}merge}\PYG{p}{(}\PYG{n}{in1}\PYG{p}{,} \PYG{n}{in2}\PYG{p}{,} \PYG{n}{out}\PYG{p}{):}
+    \PYG{n}{N1} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{in1}\PYG{p}{)}
+    \PYG{n}{N2} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{in2}\PYG{p}{)}
+    \PYG{n}{N} \PYG{o}{=} \PYG{n}{N1} \PYG{o}{+} \PYG{n}{N2}
+    \PYG{n}{j1} \PYG{o}{=} \PYG{l+m+mi}{0}
+    \PYG{n}{j2} \PYG{o}{=} \PYG{l+m+mi}{0}
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{N}\PYG{p}{):}
+        \PYG{k}{try}\PYG{p}{:}
+            \PYG{k}{if} \PYG{n}{in1}\PYG{p}{[}\PYG{n}{j1}\PYG{p}{]} \PYG{o}{\PYGZlt{}} \PYG{n}{in2}\PYG{p}{[}\PYG{n}{j2}\PYG{p}{]:}
+                \PYG{n}{out}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{=} \PYG{n}{in1}\PYG{p}{[}\PYG{n}{j1}\PYG{p}{]}
+                \PYG{n}{j1} \PYG{o}{+=} \PYG{l+m+mi}{1}
+            \PYG{k}{else}\PYG{p}{:}
+                \PYG{n}{out}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{=} \PYG{n}{in2}\PYG{p}{[}\PYG{n}{j2}\PYG{p}{]}
+                \PYG{n}{j2} \PYG{o}{+=} \PYG{l+m+mi}{1}
+        \PYG{k}{except} \PYG{n+ne}{IndexError}\PYG{p}{:}
+            \PYG{c+c1}{\PYGZsh{} We are at the end of one of the lists}
+            \PYG{c+c1}{\PYGZsh{} Now just append the other list onto out}
+            \PYG{k}{if} \PYG{n}{j1} \PYG{o}{==} \PYG{n}{N1}\PYG{p}{:}
+                \PYG{n}{out}\PYG{p}{[}\PYG{n}{i}\PYG{p}{:]} \PYG{o}{=} \PYG{n}{in2}\PYG{p}{[}\PYG{n}{j2}\PYG{p}{:]}
+            \PYG{k}{else}\PYG{p}{:}
+                \PYG{n}{out}\PYG{p}{[}\PYG{n}{i}\PYG{p}{:]} \PYG{o}{=} \PYG{n}{in1}\PYG{p}{[}\PYG{n}{j1}\PYG{p}{:]}
+            \PYG{k}{return}
+
+\PYG{k}{def} \PYG{n+nf}{mergesort}\PYG{p}{(}\PYG{n}{A}\PYG{p}{):}
+    \PYG{n}{N} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{A}\PYG{p}{)}
+    \PYG{c+c1}{\PYGZsh{} Lists of size 1 (or 0) are trivially sorted}
+    \PYG{c+c1}{\PYGZsh{} However for small lists selection sort is more efficient}
+    \PYG{k}{if} \PYG{n}{N} \PYG{o}{\PYGZlt{}} \PYG{l+m+mi}{10}\PYG{p}{:}
+        \PYG{n}{selection\PYGZus{}sort}\PYG{p}{(}\PYG{n}{A}\PYG{p}{)}
+        \PYG{k}{return}
+    \PYG{n}{middle} \PYG{o}{=} \PYG{n}{N} \PYG{o}{\PYGZgt{}\PYGZgt{}} \PYG{l+m+mi}{1}
+    \PYG{n}{mergesort}\PYG{p}{(}\PYG{n}{A}\PYG{p}{[:}\PYG{n}{middle}\PYG{p}{])}
+    \PYG{n}{mergesort}\PYG{p}{(}\PYG{n}{A}\PYG{p}{[}\PYG{n}{middle}\PYG{p}{:])}
+    \PYG{n}{\PYGZus{}merge}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{copy}\PYG{p}{(}\PYG{n}{A}\PYG{p}{[:}\PYG{n}{middle}\PYG{p}{]),} \PYG{n}{np}\PYG{o}{.}\PYG{n}{copy}\PYG{p}{(}\PYG{n}{A}\PYG{p}{[}\PYG{n}{middle}\PYG{p}{:]),} \PYG{n}{A}\PYG{p}{)}
+
+\PYG{k}{def} \PYG{n+nf}{\PYGZus{}heap\PYGZus{}parent}\PYG{p}{(}\PYG{n}{n}\PYG{p}{):}
+    \PYG{k}{return} \PYG{p}{(}\PYG{n}{n} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{o}{//} \PYG{l+m+mi}{2}
+\PYG{k}{def} \PYG{n+nf}{\PYGZus{}heap\PYGZus{}left\PYGZus{}child}\PYG{p}{(}\PYG{n}{n}\PYG{p}{):}
+    \PYG{k}{return} \PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{n} \PYG{o}{+} \PYG{l+m+mi}{1}
+
+\PYG{k}{def} \PYG{n+nf}{\PYGZus{}construct\PYGZus{}heap}\PYG{p}{(}\PYG{n}{A}\PYG{p}{):}
+    \PYG{n}{N} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{A}\PYG{p}{)}
+    \PYG{k}{for} \PYG{n}{start} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{\PYGZus{}heap\PYGZus{}parent}\PYG{p}{(}\PYG{n}{N}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{),} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{):}
+        \PYG{n}{\PYGZus{}repair\PYGZus{}heap}\PYG{p}{(}\PYG{n}{A}\PYG{p}{,} \PYG{n}{start}\PYG{p}{,} \PYG{n}{N}\PYG{p}{)}
+
+\PYG{k}{def} \PYG{n+nf}{\PYGZus{}repair\PYGZus{}heap}\PYG{p}{(}\PYG{n}{A}\PYG{p}{,} \PYG{n}{start}\PYG{p}{,} \PYG{n}{end}\PYG{p}{):}
+    \PYG{c+c1}{\PYGZsh{} Repair the heap in A between start and end with incorrect top node}
+    \PYG{n}{pos} \PYG{o}{=} \PYG{n}{start}
+    \PYG{n}{to\PYGZus{}swap} \PYG{o}{=} \PYG{n}{pos}
+    \PYG{n}{left\PYGZus{}child} \PYG{o}{=} \PYG{n}{\PYGZus{}heap\PYGZus{}left\PYGZus{}child}\PYG{p}{(}\PYG{n}{pos}\PYG{p}{)}
+    \PYG{k}{while} \PYG{n}{left\PYGZus{}child} \PYG{o}{\PYGZlt{}} \PYG{n}{end}\PYG{p}{:}
+        \PYG{k}{if} \PYG{n}{A}\PYG{p}{[}\PYG{n}{to\PYGZus{}swap}\PYG{p}{]} \PYG{o}{\PYGZlt{}} \PYG{n}{A}\PYG{p}{[}\PYG{n}{left\PYGZus{}child}\PYG{p}{]:}
+            \PYG{n}{to\PYGZus{}swap} \PYG{o}{=} \PYG{n}{left\PYGZus{}child}
+        \PYG{k}{if} \PYG{n}{left\PYGZus{}child} \PYG{o}{+} \PYG{l+m+mi}{1} \PYG{o}{\PYGZlt{}} \PYG{n}{end} \PYG{o+ow}{and} \PYG{n}{A}\PYG{p}{[}\PYG{n}{to\PYGZus{}swap}\PYG{p}{]} \PYG{o}{\PYGZlt{}} \PYG{n}{A}\PYG{p}{[}\PYG{n}{left\PYGZus{}child} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{]:}
+            \PYG{n}{to\PYGZus{}swap} \PYG{o}{=} \PYG{n}{left\PYGZus{}child} \PYG{o}{+} \PYG{l+m+mi}{1}
+        \PYG{k}{if} \PYG{n}{to\PYGZus{}swap} \PYG{o}{==} \PYG{n}{pos}\PYG{p}{:}
+            \PYG{k}{return}
+        \PYG{n}{swap}\PYG{p}{(}\PYG{n}{A}\PYG{p}{,} \PYG{n}{pos}\PYG{p}{,} \PYG{n}{to\PYGZus{}swap}\PYG{p}{)}
+        \PYG{n}{pos} \PYG{o}{=} \PYG{n}{to\PYGZus{}swap}
+        \PYG{n}{left\PYGZus{}child} \PYG{o}{=} \PYG{n}{\PYGZus{}heap\PYGZus{}left\PYGZus{}child}\PYG{p}{(}\PYG{n}{pos}\PYG{p}{)}
+
+\PYG{k}{def} \PYG{n+nf}{heapsort}\PYG{p}{(}\PYG{n}{A}\PYG{p}{):}
+    \PYG{n}{N} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{A}\PYG{p}{)}
+    \PYG{n}{\PYGZus{}construct\PYGZus{}heap}\PYG{p}{(}\PYG{n}{A}\PYG{p}{)}
+    \PYG{k}{for} \PYG{n}{heap\PYGZus{}end} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{N}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{):}
+        \PYG{n}{swap}\PYG{p}{(}\PYG{n}{A}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{heap\PYGZus{}end}\PYG{p}{)}
+        \PYG{n}{\PYGZus{}repair\PYGZus{}heap}\PYG{p}{(}\PYG{n}{A}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{heap\PYGZus{}end}\PYG{p}{)}
+\end{Verbatim}
